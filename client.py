@@ -32,5 +32,6 @@ while msg != 'STOP':
   msg = input("Enter a message: ").upper()
   if msg == 'STOP':
     c.send(c.DISCONNECT_MESSAGE)
+    print("This client is now disconnected")
   else:
     c.send(msg)
