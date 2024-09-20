@@ -1,47 +1,57 @@
+# Importing modules
 import socket
-from _thread import *
-import sys
+import threading
 
-#creating and binding the socket
-server = "127.0.0.1"
-port = 5555
+# Constants
+HEADER = 64  # First message to the server is 64 bytes
+PORT = 5050  # port location
+SERVER = socket.gethostbyname(socket.gethostname())  # Gets the IPv4
+ADDR = (SERVER, PORT)  # makes a tupple
+FORMAT = 'utf-8'
+DISCONNECT_MESSAGE = "! DISCONNECTED"
 
-SERVER = socket.gethostbyname(socket.gethostname()) 
 print(SERVER)
-s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 
-try:
-    s.bind((server,port))
-except socket.error as e:
-    str(e)
 
-#listening for connections
-s.listen(2)
-print("Waiting for a connection, Server Started")
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create socket family/type
+server.bind(ADDR)  # Binds the 2 items together in the tupple address
 
-def threaded_client(conn):
-    conn.send(str.encode("Connected"))
-    reply = ""
-    while True:
-        try:
-            data = conn.recv(2048)
-            reply = data.decode("utf-8")
 
-            if not data:
-                print("Disconnected")
-                break
+# Handles individual connections between client and server
+def handle_client(conn, addr):
+    print(f"New connection {addr} connected.")
+
+    connected = True
+    while connected:
+        msg_length = conn.recv(HEADER).decode(FORMAT)  # Wait until something is sent over the socket
+        if msg_length:
+            msg_length = int(msg_length)  # Shows length of the message that is about to be recieved
+            msg = conn.recv(msg_length).decode(FORMAT)
+
+            if msg == DISCONNECT_MESSAGE:
+                connected = False
+                print(f"[{addr}] This client is now disconnected")
+
             else:
-                print("Received: ", reply)
-                print("Sending: ",reply)
+                print(f"[{addr}]{msg}")
+                server_msg = input("--> ").upper()
+                conn.send(server_msg.encode(FORMAT))
 
-            conn.sendall(str.encode(reply))
+    conn.close()
 
-        except:
-            print("Lost connection")
-            conn.close()
 
-while True:
-    conn, addr = s.accept()
-    print("Connected to:", addr)
+# Initiates the client server connection set up
+def start():
+    server.listen()  # Waits for connections
+    print(f"[LISTENING] Server is listening on {SERVER}")
+    while True:
+        conn, addr = server.accept()
+        thread = threading.Thread(target=handle_client, args=(conn, addr))
+        thread.start()
 
-    start_new_thread(threaded_client,(conn,))
+        print(f"[ACTIVE CONNECTIONS] {threading.activeCount() - 1}")  # Shows how many connections there are
+
+
+######################### MAIN #########################
+print("Server is starting... ")
+start()
