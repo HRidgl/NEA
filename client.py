@@ -1,75 +1,31 @@
-import pygame
+import socket
 
-#constants
-WIDTH = 500
-HEIGHT = 500
+# Constants
+HEADER = 64  #First message to the server is 64 bytes
+PORT = 5050  #port location
+SERVER = '172.20.63.213'
+ADDR = (SERVER, PORT)  #makes a tupple
+FORMAT = 'utf-8'
+DISCONNECT_MESSAGE = "! DISCONNECTED"
 
-#colours
-red = (255,0,0)
-green = (0,255,0)
-blue = (0,0,255)
-white = (255,255,255)
-black = (0,0,0)
+client = socket.socket(socket.AF_INET,
+                       socket.SOCK_STREAM)  # Create socket family/type
+client.connect(ADDR)
 
-#screen
-win = pygame.display.set_mode((WIDTH,HEIGHT))
-pygame.display.set_caption("Client")
 
-#global varibales
-clientNumber = 0
+def send(msg):
+  message = msg.encode(FORMAT)
+  msg_length = len(message)
+  send_length = str(msg_length).encode(FORMAT)
+  send_length += b' ' * (HEADER - len(send_length))  # Padding up to 64 bytes
+  client.send(send_length)
+  client.send(message)
+  print(client.recv(2048).decode(FORMAT))
 
-#creating the player
-class Player():
-    def __init__(self,x,y,width,height,colour):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.colour = colour
-
-        self.rect = (x,y,width,height)
-        self.vel = 3
-
-    def draw(self,win):
-        pygame.draw.rect(win,self.colour,self.rect)
-
-    def move(self):
-        keys = pygame.key.get_pressed()
-
-        if keys[pygame.K_LEFT]:
-            self.x -= self.vel
-
-        if keys[pygame.K_RIGHT]:
-            self.x += self.vel
-
-        if keys[pygame.K_UP]:
-            self.y -= self.vel
-
-        if keys[pygame.K_DOWN]:
-            self.y += self.vel
-
-        self.rect = (self.x,self.y,self.width,self.height)
-
-#redraws the screen
-def redrawWindow(win,player):
-    win.fill(white)
-    player.draw(win)
-    pygame.display.update()
-
-#main game loop
-def main():
-    run = True
-    p = Player(50,50,100,100,green)
-    clock = pygame.time.Clock()
-
-    while run:
-        clock.tick(60)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-                pygame.quite()
-
-        p.move()
-        redrawWindow(win,p)
-
-main()
+msg = ''
+while msg != 'STOP':
+  msg = input("Enter a message: ").upper()
+  if msg == 'STOP':
+    send(DISCONNECT_MESSAGE)
+  else:
+    send(msg)
