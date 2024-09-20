@@ -28,7 +28,7 @@ class Server:
 
                 if msg == self.DISCONNECT_MESSAGE:
                     connected = False
-                    print(f"[{addr}] This client is now disconnected")
+                    print(f"client [{addr}] is now disconnected")
 
                 else:
                     print(f"[{addr}]{msg}")
@@ -47,7 +47,7 @@ class Server:
             thread = threading.Thread(target=s.handle_client(conn,addr))
             thread.start()
 
-            print(f"[ACTIVE CONNECTIONS] {threading.activeCount() - 1}")  # Shows how many connections there are
+            print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 1}")  # Shows how many connections there are
 
 
 ######################### MAIN #########################
