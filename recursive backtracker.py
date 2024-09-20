@@ -1,5 +1,4 @@
-import pygame
-from random import choice
+from main import *
 
 WIDTH = 800
 HEIGHT = 600
@@ -8,13 +7,23 @@ TILE = 50
 columns = WIDTH // TILE 
 rows = HEIGHT // TILE
 
-SAGE = (4, 99, 56)
-ORANGE = (237, 151, 2)
-MAGENTA = (214, 0, 129)
-
 pygame.init()
 screen = pygame.display.set_mode(RESOLUTION)
 clock = pygame.time.Clock()
+
+class Colours:
+
+    def __init__(self):
+        self.RED = (255,0,0)
+        self.GREEN = (0,255,0)
+        self.BLUE = (0,0,255)
+        self.BLACK = (0,0,0)
+        self.WHITE = (255,255,255)
+
+        self.SAGE = (4, 99, 56)
+        self.ORANGE = (237, 151, 2)
+        self.MAGENTA = (214, 0, 129)
+        
 
 class Cell:
     def __init__(self, x, y):
@@ -26,7 +35,7 @@ class Cell:
     def draw_current_cell(self):
         x = self.x * TILE
         y = self.y * TILE
-        pygame.draw.rect(screen, MAGENTA, (x+2, y+2, TILE-2, TILE-2))
+        pygame.draw.rect(screen, colours.MAGENTA, (x+2, y+2, TILE-2, TILE-2))
 
     def draw(self):
         x, y = self.x * TILE, self.y * TILE
@@ -34,13 +43,13 @@ class Cell:
             pygame.draw.rect(screen, (0,0,0), (x,y,TILE,TILE))
 
         if self.walls['top']:
-            pygame.draw.line(screen, ORANGE , (x, y), (x + TILE, y), self.thickness)
+            pygame.draw.line(screen, colours.ORANGE , (x, y), (x + TILE, y), self.thickness)
         if self.walls['right']:
-            pygame.draw.line(screen, ORANGE , (x + TILE, y), (x + TILE, y + TILE), self.thickness)
+            pygame.draw.line(screen, colours.ORANGE , (x + TILE, y), (x + TILE, y + TILE), self.thickness)
         if self.walls['bottom']:
-            pygame.draw.line(screen, ORANGE , (x + TILE, y + TILE), (x , y + TILE), self.thickness)
+            pygame.draw.line(screen, colours.ORANGE , (x + TILE, y + TILE), (x , y + TILE), self.thickness)
         if self.walls['left']:
-            pygame.draw.line(screen, ORANGE , (x, y + TILE), (x, y), self.thickness)
+            pygame.draw.line(screen, colours.ORANGE , (x, y + TILE), (x, y), self.thickness)
 
     def check_cell(self, x, y):
         find_index = lambda x, y: x + y * columns
@@ -80,12 +89,13 @@ def remove_walls(current, next):
         current.walls['bottom'] = False
         next.walls['top'] = False
 
+colours = Colours()
 grid_cells = [Cell(col,row) for row in range(rows) for col in range(columns)]
 current_cell = grid_cells[0]
 stack = []
 
 while True:
-    screen.fill(SAGE)
+    screen.fill(colours.SAGE)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
