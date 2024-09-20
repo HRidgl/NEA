@@ -34,7 +34,7 @@ class Colours:
         self.SANDY = (252, 206, 106)
         self.BROWN = (189, 132, 0)
         
-
+# Class used to generate each cell in the maze.
 class Cell:
     def __init__(self, x, y):
         self.x, self.y = x, y
@@ -42,11 +42,13 @@ class Cell:
         self.visited = False
         self.thickness = 2
 
+    # Draws a cell that will identify the current cell. This will move throught the program.
     def draw_current_cell(self):
         x = self.x * TILE
         y = self.y * TILE
         pygame.draw.rect(screen, colours.MAGENTA, (x+2, y+2, TILE-2, TILE-2))
 
+    # Draws each cell to the screen. It identifies the edges as well.
     def draw(self):
         x, y = self.x * TILE, self.y * TILE
         if self.visited:
@@ -61,12 +63,14 @@ class Cell:
         if self.walls['left']:
             pygame.draw.line(screen, colours.LIGHT_BROWN , (x, y + TILE), (x, y), self.thickness)
 
+    # Finds the index of a cell when called and checks that it is adjacent to the current cell.
     def check_cell(self, x, y):
         find_index = lambda x, y: x + y * columns
         if x < 0 or x > columns - 1 or y < 0 or y > rows - 1:
             return False
         return grid_cells[find_index(x, y)]
-    
+
+    # Method used which creates an array of all of the unvisited adjacent cells and chooses a random adjacent cell. If all adjacent cells are visited the function will return false triggering backtracking in the algorithm.
     def check_neighbours(self):
         neighbours = []
         top = self.check_cell(self.x, self.y - 1)
@@ -82,7 +86,8 @@ class Cell:
         if left and not left.visited:
             neighbours.append(left)
         return choice(neighbours) if neighbours else False
-    
+
+# Removes the edge between the current cell and the selected adjacent cell from the check neighbours method.
 def remove_walls(current, next):
     dx = current.x - next.x
     if dx == 1:
@@ -109,25 +114,34 @@ current_cell = grid_cells[0]
 # Creating a stack so my algorithm can backtrack
 stack = []
 
+# Using a while loop to constantly iterate through my algorithm
 while True:
+
+    # Filling the screen
     screen.fill(colours.BROWN)
 
+    # Checking that the user hasn't pressed the exit button
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
 
+    # Drawing all the cells
     [cell.draw() for cell in grid_cells]
     current_cell.visited = True
     current_cell.draw_current_cell()
 
+    # Checking for neighbours when choosing the next cell or backtracking instead
     next_cell = current_cell.check_neighbours()
     if next_cell:
         next_cell.visited = True
-        stack.append(current_cell)
-        remove_walls(current_cell, next_cell)
-        current_cell = next_cell
+        stack.append(current_cell)                 # Adds the current cell to the stack
+        remove_walls(current_cell, next_cell)      # Function to remove the wall between the current and next cell
+        current_cell = next_cell                   # The next cell becomes the new current cell
     elif stack:
-        current_cell = stack.pop()
+        current_cell = stack.pop()                 # Backtracks by poping the previous cell off the top of the stack
 
+    # Updating the screen
     pygame.display.flip()
+
+    # Clockspeed
     clock.tick(80)
