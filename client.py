@@ -1,31 +1,36 @@
 import socket
 
-# Constants
-HEADER = 64  #First message to the server is 64 bytes
-PORT = 5050  #port location
-SERVER = '172.20.63.213'
-ADDR = (SERVER, PORT)  #makes a tupple
-FORMAT = 'utf-8'
-DISCONNECT_MESSAGE = "! DISCONNECTED"
+class Client:
+    
+    def __init__(self):
+        self.HEADER = 64  #First message to the server is 64 bytes
+        self.PORT = 5050  #port location
+        self.SERVER = '172.20.63.213' # fill with server ip
+        self.ADDR = (self.SERVER, self.PORT)  #makes a tupple
+        self.FORMAT = 'utf-8'
+        self.DISCONNECT_MESSAGE = "! DISCONNECTED"
 
-client = socket.socket(socket.AF_INET,
-                       socket.SOCK_STREAM)  # Create socket family/type
-client.connect(ADDR)
+        self.client = socket.socket(socket.AF_INET,
+                            socket.SOCK_STREAM)  # Create socket family/type
+        self.client.connect(self.ADDR)
 
 
-def send(msg):
-  message = msg.encode(FORMAT)
-  msg_length = len(message)
-  send_length = str(msg_length).encode(FORMAT)
-  send_length += b' ' * (HEADER - len(send_length))  # Padding up to 64 bytes
-  client.send(send_length)
-  client.send(message)
-  print(client.recv(2048).decode(FORMAT))
+    def send(self,msg):
+        message = msg.encode(self.FORMAT)
+        msg_length = len(message)
+        send_length = str(msg_length).encode(self.FORMAT)
+        send_length += b' ' * (self.HEADER - len(send_length))  # Padding up to 64 bytes
+        self.client.send(send_length)
+        self.client.send(message)
+        print(self.client.recv(2048).decode(self.FORMAT))
+
+#---------------------------------MAIN---------------------------------#
+c = Client()
 
 msg = ''
 while msg != 'STOP':
   msg = input("Enter a message: ").upper()
   if msg == 'STOP':
-    send(DISCONNECT_MESSAGE)
+    c.send(c.DISCONNECT_MESSAGE)
   else:
-    send(msg)
+    c.send(msg)
