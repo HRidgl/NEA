@@ -1,5 +1,9 @@
+# In this file my code generates a random map each time the code is ran using the recursive backtracking algorithm.
+
+# Importing modules from the main file
 from main import *
 
+# Predeclaing constants at the start of the program
 WIDTH = 800
 HEIGHT = 600
 RESOLUTION = (WIDTH, HEIGHT)
@@ -7,12 +11,14 @@ TILE = 50
 columns = WIDTH // TILE 
 rows = HEIGHT // TILE
 
+# Initialising pygame, setting up the screen and setting up the clock
 pygame.init()
 screen = pygame.display.set_mode(RESOLUTION)
 clock = pygame.time.Clock()
 
+# Creating a class with all colours so that they can be easily accessed
 class Colours:
-
+    
     def __init__(self):
         self.RED = (255,0,0)
         self.GREEN = (0,255,0)
@@ -93,9 +99,14 @@ def remove_walls(current, next):
         current.walls['bottom'] = False
         next.walls['top'] = False
 
+# Initialising my colours class
 colours = Colours()
+
+# Creating the cells in the grid for the maze
 grid_cells = [Cell(col,row) for row in range(rows) for col in range(columns)]
 current_cell = grid_cells[0]
+
+# Creating a stack so my algorithm can backtrack
 stack = []
 
 while True:
