@@ -1,4 +1,4 @@
-import socket
+from main import *
 
 class Client:
     
