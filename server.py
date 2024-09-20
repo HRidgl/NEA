@@ -1,6 +1,5 @@
 # Importing modules
-import socket
-import threading
+from main import *
 
 class Server:
 
