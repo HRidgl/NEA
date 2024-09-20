@@ -23,6 +23,10 @@ class Colours:
         self.SAGE = (4, 99, 56)
         self.ORANGE = (237, 151, 2)
         self.MAGENTA = (214, 0, 129)
+
+        self.LIGHT_BROWN = (166, 114, 0)
+        self.SANDY = (252, 206, 106)
+        self.BROWN = (189, 132, 0)
         
 
 class Cell:
@@ -40,16 +44,16 @@ class Cell:
     def draw(self):
         x, y = self.x * TILE, self.y * TILE
         if self.visited:
-            pygame.draw.rect(screen, (0,0,0), (x,y,TILE,TILE))
+            pygame.draw.rect(screen, (colours.SANDY), (x,y,TILE,TILE))
 
         if self.walls['top']:
-            pygame.draw.line(screen, colours.ORANGE , (x, y), (x + TILE, y), self.thickness)
+            pygame.draw.line(screen, colours.LIGHT_BROWN , (x, y), (x + TILE, y), self.thickness)
         if self.walls['right']:
-            pygame.draw.line(screen, colours.ORANGE , (x + TILE, y), (x + TILE, y + TILE), self.thickness)
+            pygame.draw.line(screen, colours.LIGHT_BROWN , (x + TILE, y), (x + TILE, y + TILE), self.thickness)
         if self.walls['bottom']:
-            pygame.draw.line(screen, colours.ORANGE , (x + TILE, y + TILE), (x , y + TILE), self.thickness)
+            pygame.draw.line(screen, colours.LIGHT_BROWN , (x + TILE, y + TILE), (x , y + TILE), self.thickness)
         if self.walls['left']:
-            pygame.draw.line(screen, colours.ORANGE , (x, y + TILE), (x, y), self.thickness)
+            pygame.draw.line(screen, colours.LIGHT_BROWN , (x, y + TILE), (x, y), self.thickness)
 
     def check_cell(self, x, y):
         find_index = lambda x, y: x + y * columns
@@ -95,7 +99,7 @@ current_cell = grid_cells[0]
 stack = []
 
 while True:
-    screen.fill(colours.SAGE)
+    screen.fill(colours.BROWN)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
