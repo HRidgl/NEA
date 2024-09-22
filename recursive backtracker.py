@@ -1,7 +1,8 @@
 # In this file my code generates a random map each time the code is ran using the recursive backtracking algorithm.
 
-# Importing modules from the main file
-from main import *
+# Importing modules 
+import pygame
+from random import choice
 
 # Predeclaing constants at the start of the program
 WIDTH = 800
