@@ -1,10 +1,9 @@
 # In this file my code generates a random map each time the code is ran using the recursive backtracking algorithm.
 
-# Importing modules 
-import pygame
-from random import choice
+# Importing modules from the main
+from main import *
 
-# Predeclaing constants at the start of the program
+# Predeclaring constants at the start of the program
 WIDTH = 800
 HEIGHT = 600
 RESOLUTION = (WIDTH, HEIGHT)
@@ -43,7 +42,7 @@ class Cell:
         self.visited = False
         self.thickness = 2
 
-    # Draws a cell that will identify the current cell. This will move throught the program.
+    # Draws a cell that will identify the current cell. This will move throughout the program.
     def draw_current_cell(self):
         x = self.x * TILE
         y = self.y * TILE
