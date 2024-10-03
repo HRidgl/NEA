@@ -1,4 +1,3 @@
-# class for the player object to be created
 class Player:
     
     def __init__(self,x,y,width,height):
