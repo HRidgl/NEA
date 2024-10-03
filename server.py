@@ -1,5 +1,6 @@
 # Importing modules
 from main import *
+from player import *
 
 # Class used to make a computer turn into a server
 class Server:
