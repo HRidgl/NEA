@@ -1,5 +1,6 @@
-# Importing all my modules here I will pull from this file at the start of each other file.
+#importing all my modules here
 import socket
 import threading
 import pygame
+import pickle
 from random import choice
