@@ -28,7 +28,7 @@ class Server:
             if not data:
                 break
                 
-            # Deserialize the data
+            # Deserialize the data using the pickle module
             obj = pickle.loads(data)
             print("Received object:", obj)
 
