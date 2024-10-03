@@ -13,28 +13,21 @@ class Client:
         self.FORMAT = 'utf-8'
         self.DISCONNECT_MESSAGE = "! DISCONNECTED"
 
-        self.client = socket.socket(socket.AF_INET,
-                            socket.SOCK_STREAM)  # Create socket family/type
+        self.client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)  # Create socket family/type
         self.client.connect(self.ADDR)
 
-        # Example object to send
-        #self.data = {'name': 'Holly', 'age': 17, 'city': 'Notts'}
-        self.data = Player(100,100,50,50)
+        self.players = []
 
+        # Objects to send
+        self.player1 = Player(100,100,50,50)
+        self.players.append(self.player1)
 
-    # Sending a message to the server
-    def send(self,msg):
-        message = msg.encode(self.FORMAT)
-        msg_length = len(message)
-        send_length = str(msg_length).encode(self.FORMAT)
-        send_length += b' ' * (self.HEADER - len(send_length))  # Padding up to 64 bytes
-        self.client.send(send_length)
-        self.client.send(message)
-        print(self.client.recv(2048).decode(self.FORMAT))
+        self.player2 = Player(300,300,10,10)
+        self.players.append(self.player2)
 
-    def send_object(self):
+    def send_object(self,object):
        # Serialize the object
-        serialized_data = pickle.dumps(self.data)
+        serialized_data = pickle.dumps(object)
 
         # Send the serialized object
         self.client.sendall(serialized_data)
@@ -42,10 +35,6 @@ class Client:
         self.client.close()
 
 #---------------------------------MAIN---------------------------------#
-#p = 
-
 c = Client()
 
-c.send_object()
-
-###################################################################################
+c.send_object(c.player1)
