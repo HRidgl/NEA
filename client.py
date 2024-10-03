@@ -1,5 +1,6 @@
 # Importing all modules from the main
 from main import *
+from player import *
 
 # Class used to handle client requests and connects the client to the server
 class Client:
@@ -17,7 +18,8 @@ class Client:
         self.client.connect(self.ADDR)
 
         # Example object to send
-        self.data = {'name': 'Holly', 'age': 17, 'city': 'Notts'}
+        #self.data = {'name': 'Holly', 'age': 17, 'city': 'Notts'}
+        self.data = Player(100,100,50,50)
 
 
     # Sending a message to the server
@@ -40,6 +42,8 @@ class Client:
         self.client.close()
 
 #---------------------------------MAIN---------------------------------#
+#p = 
+
 c = Client()
 
 c.send_object()
