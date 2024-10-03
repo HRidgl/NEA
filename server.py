@@ -22,33 +22,26 @@ class Server:
 
         connected = True
         while connected:
-            msg_length = conn.recv(self.HEADER).decode(self.FORMAT)  # Wait until something is sent over the socket
-            if msg_length:
-                msg_length = int(msg_length)  # Shows length of the message that is about to be received
-                msg = conn.recv(msg_length).decode(self.FORMAT)
-
-                if msg == self.DISCONNECT_MESSAGE:
-                    connected = False
-                    print(f"client [{addr}] is now disconnected")
-
-                else:
-                    print(f"[{addr}]{msg}")
-                    server_msg = input("--> ").upper()
-                    conn.send(server_msg.encode(self.FORMAT))
-
-        conn.close()
+            # Receive data from the client
+            data = conn.recv(4096)
+            if not data:
+                break
+                
+            # Deserialize the data
+            obj = pickle.loads(data)
+            print("Received object:", obj)
 
 
     # Initiates the client server connection set up
     def start(self):
-        self.server.listen()  # Waits for connections
+        self.server.listen(1)  # Waits for connections
         print(f"[LISTENING] Server is listening on {self.SERVER}")
         while True:
             conn, addr = self.server.accept()
             thread = threading.Thread(target=s.handle_client(conn,addr))
             thread.start()
 
-            print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 1}")  # Shows how many connections there are
+            print(f"[ACTIVE CONNECTIONS] {threading.active_count()}")  # Shows how many connections there are
 
 
 ######################### MAIN #########################
