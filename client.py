@@ -7,7 +7,7 @@ class Client:
     def __init__(self):
         self.HEADER = 64  #First message to the server is 64 bytes
         self.PORT = 5050  #port location
-        self.SERVER = '172.20.63.213' # fill with server ip
+        self.SERVER = '172.20.53.216' # fill with server ip
         self.ADDR = (self.SERVER, self.PORT)  #makes a tuple
         self.FORMAT = 'utf-8'
         self.DISCONNECT_MESSAGE = "! DISCONNECTED"
@@ -15,6 +15,9 @@ class Client:
         self.client = socket.socket(socket.AF_INET,
                             socket.SOCK_STREAM)  # Create socket family/type
         self.client.connect(self.ADDR)
+
+        # Example object to send
+        self.data = {'name': 'Holly', 'age': 17, 'city': 'Notts'}
 
 
     # Sending a message to the server
@@ -27,15 +30,18 @@ class Client:
         self.client.send(message)
         print(self.client.recv(2048).decode(self.FORMAT))
 
+    def send_object(self):
+       # Serialize the object
+        serialized_data = pickle.dumps(self.data)
+
+        # Send the serialized object
+        self.client.sendall(serialized_data)
+        
+        self.client.close()
+
 #---------------------------------MAIN---------------------------------#
 c = Client()
 
-# Keeps asking the client for a message until they send 'STOP'
-msg = ''
-while msg != 'STOP':
-  msg = input("Enter a message: ").upper()
-  if msg == 'STOP':
-    c.send(c.DISCONNECT_MESSAGE)
-    print("This client is now disconnected")
-  else:
-    c.send(msg)
+c.send_object()
+
+###################################################################################
