@@ -11,6 +11,8 @@ TILE = 50
 columns = WIDTH // TILE 
 rows = HEIGHT // TILE
 
+check = True
+
 # Initialising pygame, setting up the screen and setting up the clock
 pygame.init()
 screen = pygame.display.set_mode(RESOLUTION)
@@ -115,7 +117,7 @@ current_cell = grid_cells[0]
 stack = []
 
 # Using a while loop to constantly iterate through my algorithm
-while True:
+while check == True:
 
     # Filling the screen
     screen.fill(colours.BROWN)
@@ -140,8 +142,20 @@ while True:
     elif stack:
         current_cell = stack.pop()                 # Backtracks by poping the previous cell off the top of the stack
 
+    if len(stack) == 0:
+        if current_cell.x == -2 and current_cell.y == -2:
+            print("FINISHED")
+            time.sleep(1)
+            check = False
+        else:
+            current_cell.x = -2
+            current_cell.y = -2
+        pygame.display.flip()
+
     # Updating the screen
     pygame.display.flip()
 
     # Clockspeed
     clock.tick(80)
+
+print("MAIN!!!!!!!!!!!!!!!!")
