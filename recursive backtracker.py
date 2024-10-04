@@ -1,4 +1,4 @@
-# In this file my code generates a random map each time the code is ran using the recursive backtracking algorithm.
+### In this file my code generates a random map each time the code is ran using the recursive backtracking algorithm.
 
 # Importing modules from the main
 from main import *
