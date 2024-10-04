@@ -23,10 +23,11 @@ class Game():
 c = Client()
 g = Game(c)
 
-for i in range(200):
+while True:
+    c = Client()
     g.draw()
-    c.send_object(c.player1)
     g.update_screen()
+    c.send_object(c.player1)
+    c.client.close()
 
-c.client.close()
 pygame.quit()
