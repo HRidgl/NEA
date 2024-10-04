@@ -29,8 +29,10 @@ class Server:
                 break
                 
             # Deserialize the data using the pickle module
-            obj = pickle.loads(data)
-            print("Received object:", obj)
+            self.player1 = pickle.loads(data)
+            print("Received object:", self.player1)
+            print(self.player1.x)
+            print(self.player1.y)
 
 
     # Initiates the client server connection set up
