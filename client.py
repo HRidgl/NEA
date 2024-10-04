@@ -22,15 +22,14 @@ class Client:
         self.player1 = Player(100,100,50,50)
         self.players.append(self.player1)
 
-        self.player2 = Player(300,300,10,10)
-        self.players.append(self.player2)
-
     def send_object(self,object):
        # Serialize the object
         serialized_data = pickle.dumps(object)
 
         # Send the serialized object
         self.client.sendall(serialized_data)
+
+        self.client.close()
 
 #---------------------------------MAIN---------------------------------#
 c = Client()
