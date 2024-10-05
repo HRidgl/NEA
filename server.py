@@ -1,3 +1,5 @@
+### This file is used to create the server computer and handle the socket connections of clients.
+
 # Importing modules
 from main import *
 from player import *
@@ -10,7 +12,7 @@ class Server:
         self.PORT = 5050  # port location
         self.SERVER = socket.gethostbyname(socket.gethostname())  # Gets the IPv4
         self.ADDR = (self.SERVER, self.PORT)  # makes a tuple
-        self.FORMAT = 'utf-8'
+        self.FORMAT = 'utf-8' 
         self.DISCONNECT_MESSAGE = "! DISCONNECTED"
 
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create socket family/type
