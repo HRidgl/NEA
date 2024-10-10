@@ -26,18 +26,11 @@ class Game():
 
 # Calling my classes and creating instances of them
 c = Client()
+print(c)
 g = Game(c)
 
 # Main loop for the game
 while True:
-
-    # Drawing the screen
-    g.draw()
-    c.player1.draw_player(g.screen)
-
-    # Sending player coordinates to the server
-    c.send_object(c.player1.x)
-    c.send_object(c.player1.y)
 
     # Checking if the quit button has been pressed
     for event in pygame.event.get():
@@ -56,6 +49,13 @@ while True:
                 c.player1.y += 10
             if event.key == pygame.K_UP:
                 c.player1.y -= 10
+
+    # Drawing the screen
+    g.draw()
+    c.player1.draw_player(g.screen)
+
+    # Sending player coordinates to the server
+    c.send_object(c.player1)
 
     # Updating the screen
     g.update_screen()
