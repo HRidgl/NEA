@@ -24,9 +24,24 @@ class Server:
         print(f"New connection {addr} connected.")
 
         connected = True
-        while connected:
+        while connected == True:
 
-            # Receive data from the client
+            # First, receive the header to determine the size of the incoming data
+            header = conn.recv(self.HEADER)
+            if not header:
+                print(f"[DISCONNECTED] {addr} disconnected.")
+                break
+            
+            # Get the size of the incoming data
+            data_length = int(header.decode(self.FORMAT).strip())
+            data = conn.recv(data_length)
+
+            # Deserialize the data using pickle
+            player = pickle.loads(data)
+            print("Received object:", player)
+            print(f"Player position: ({player.x}, {player.y})")
+
+            ''' # Receive data from the client
             data = conn.recv(4096)
             if not data:
                 break
@@ -34,7 +49,7 @@ class Server:
             # Deserialize the data using the pickle module
             player = pickle.loads(data)
             print("Received object:", player)
-            print(f"Player position: ({player.x},{player.y})")
+            print(f"Player position: ({player.x},{player.y})")'''
 
         conn.close()
 
