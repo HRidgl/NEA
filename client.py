@@ -36,7 +36,3 @@ class Client:
 
         # Send the header and the serialized object
         self.client.sendall(header + serialized_data)
-
-#---------------------------------MAIN---------------------------------#
-c = Client()
-c.send_object(c.player1)
