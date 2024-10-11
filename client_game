@@ -5,7 +5,7 @@ from game import *
 # Calling my classes and creating instances of them
 c = Client()
 print(c)
-g = Game(c)
+g = Game()
 
 # Main loop for the game
 while True:
