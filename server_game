@@ -1,5 +1,14 @@
+from main import *
+from game import *
 from server import *
 
+pygame.init()
 print("Server is starting... ")
-s = Server()
-s.start()
+
+g = Game('s')  # Ensure this is correctly defined
+print("Game initialized successfully.")
+
+s = Server()  # Ensure this is correctly defined
+print("Server initialized successfully.")
+
+s.start(g)
