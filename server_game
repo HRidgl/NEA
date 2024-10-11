@@ -1,0 +1,5 @@
+from server import *
+
+print("Server is starting... ")
+s = Server()
+s.start()
