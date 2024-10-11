@@ -1,14 +1,7 @@
 from main import *
-from game import *
 from server import *
+from game import *
 
-pygame.init()
-print("Server is starting... ")
-
-g = Game('s')  # Ensure this is correctly defined
-print("Game initialized successfully.")
-
-s = Server()  # Ensure this is correctly defined
-print("Server initialized successfully.")
-
-s.start(g)
+# Calling my classes and creating instances of them
+s = Server()
+s.start()
