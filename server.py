@@ -17,41 +17,79 @@ class Server:
         self.DISCONNECT_MESSAGE = "! DISCONNECTED"
 
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create socket family/type
+        self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # Allow reuse of address
         self.server.bind(self.ADDR)  # Binds the 2 items together in the tuple address
 
 
     # Handles individual connections between client and server
-    def handle_client(self, conn, addr):
+    def handle_client(self, conn, addr,g):
         print(f"New connection {addr} connected.")
 
         connected = True
         while connected == True:
 
-            # First, receive the header to determine the size of the incoming data
-            header = conn.recv(self.HEADER)
-            if not header:
-                print(f"[DISCONNECTED] {addr} disconnected.")
-                break
-            
-            # Get the size of the incoming data
-            data_length = int(header.decode(self.FORMAT).strip())
-            data = conn.recv(data_length)
+            try:
+                # First, receive the header to determine the size of the incoming data
+                header = conn.recv(self.HEADER)
+                if not header:
+                    print(f"[DISCONNECTED] {addr} disconnected.")
+                    break
+                
+                # Get the size of the incoming data
+                data_length = int(header.decode(self.FORMAT).strip())
+                data = conn.recv(data_length)
 
-            # Deserialize the data using pickle
-            player = pickle.loads(data)
-            print("Received object:", player)
-            print(f"Player position: ({player.x}, {player.y})")
+                # Deserialize the data using pickle
+                player = pickle.loads(data)
+                print("Received object:", player)
+                print(f"Player position: ({player.x}, {player.y})")
+
+                # Checking if the quit button has been pressed
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        sys.exit()
+
+                '''
+                # Drawing the screen
+                g.draw()
+                #c.player1.draw_player(g.screen)
+
+                # Updating the screen
+                g.update_screen()
+
+                # Clockspeed
+                g.clock.tick(80)'''
+
+            except Exception as e:
+                print(f"[ERROR] {e}")
+                connected = False
 
         conn.close()
 
 
     # Initiates the client server connection set up
-    def start(self):
+    def start(self,g):
         self.server.listen(1)  # Waits for connections
         print(f"[LISTENING] Server is listening on {self.SERVER}")
         while True:
-            conn, addr = self.server.accept()
-            thread = threading.Thread(target=self.handle_client, args=(conn, addr))
-            thread.start()
+            '''try:
+                print("TRUE 1")
+                conn, addr = self.server.accept()
+                thread = threading.Thread(target=self.handle_client, args=(conn, addr, g))
+                thread.start()
+                print(f"[ACTIVE CONNECTIONS] {threading.active_count()}")
 
-            print(f"[ACTIVE CONNECTIONS] {threading.active_count()}")  # Shows how many connections there are
+                while True:'''
+            try:
+                print("[WAITING FOR CONNECTIONS]")  # Indicate waiting state
+                conn, addr = self.server.accept()
+                print(f"[NEW CONNECTION] {addr} connected.")
+                thread = threading.Thread(target=self.handle_client, args=(conn, addr, g))
+                thread.start()
+                print(f"[ACTIVE CONNECTIONS] {threading.active_count()}")
+            except Exception as e:
+                print(f"[ERROR ACCEPTING CONNECTION] {e}")
+
+            '''except Exception as e:
+                print(f"[ERROR ACCEPTING CONNECTION] {e}")'''
