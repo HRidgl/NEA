@@ -3,6 +3,7 @@
 # Importing modules
 from main import *
 from player import *
+#from server_game import *
 
 # Class used to make a computer turn into a server
 class Server:
@@ -41,16 +42,6 @@ class Server:
             print("Received object:", player)
             print(f"Player position: ({player.x}, {player.y})")
 
-            ''' # Receive data from the client
-            data = conn.recv(4096)
-            if not data:
-                break
-                
-            # Deserialize the data using the pickle module
-            player = pickle.loads(data)
-            print("Received object:", player)
-            print(f"Player position: ({player.x},{player.y})")'''
-
         conn.close()
 
 
@@ -60,13 +51,7 @@ class Server:
         print(f"[LISTENING] Server is listening on {self.SERVER}")
         while True:
             conn, addr = self.server.accept()
-            thread = threading.Thread(target=s.handle_client, args=(conn, addr))
+            thread = threading.Thread(target=self.handle_client, args=(conn, addr))
             thread.start()
 
             print(f"[ACTIVE CONNECTIONS] {threading.active_count()}")  # Shows how many connections there are
-
-
-######################### MAIN #########################
-print("Server is starting... ")
-s = Server()
-s.start()
