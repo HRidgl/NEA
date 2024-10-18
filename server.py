@@ -3,10 +3,11 @@
 # Importing modules
 from main import *
 from player import *
-#from server_game import *
 
 # Class used to make a computer turn into a server
 class Server:
+
+    clients = []
 
     def __init__(self):
         self.HEADER = 64  # First message to the server is 64 bytes
@@ -18,12 +19,19 @@ class Server:
 
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create socket family/type
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # Allow reuse of address
-        self.server.bind(self.ADDR)  # Binds the 2 items together in the tuple address
 
+        self.server.bind(self.ADDR)
+    
 
     # Handles individual connections between client and server
-    def handle_client(self, conn, addr,g):
+    def handle_client(self, conn, addr):
         print(f"New connection {addr} connected.")
+        client = {'client name': 'bob', 'client socket': conn}
+
+        client_name = client['client name']
+        client_socket = client['client socket']
+
+        Server.clients.append(client)
 
         connected = True
         while connected == True:
@@ -43,6 +51,8 @@ class Server:
                 player = pickle.loads(data)
                 print("Received object:", player)
                 print(f"Player position: ({player.x}, {player.y})")
+                #msg = 'true'
+                #self.broadcast_message(client_name,msg)
 
                 # Checking if the quit button has been pressed
                 for event in pygame.event.get():
@@ -50,46 +60,34 @@ class Server:
                         pygame.quit()
                         sys.exit()
 
-                '''
-                # Drawing the screen
-                g.draw()
-                #c.player1.draw_player(g.screen)
-
-                # Updating the screen
-                g.update_screen()
-
-                # Clockspeed
-                g.clock.tick(80)'''
-
             except Exception as e:
                 print(f"[ERROR] {e}")
                 connected = False
 
         conn.close()
 
+    def broadcast_message(self,sender_name,msg):
+        for client in self.clients:
+            client_name = client['client name']
+            client_socket = client['client socket']
+            message = msg.encode(self.FORMAT)
+            msg_length = len(message)
+            send_length = str(msg_length).encode(self.FORMAT)
+            send_length += b' ' * (self.HEADER - len(send_length))  # Padding up to 64 bytes
+            self.server.send(send_length)
+            self.server.send(message)
+            #print(self.client.recv(2048).decode(self.FORMAT))
+            #if client_name != sender_name:
 
     # Initiates the client server connection set up
-    def start(self,g):
-        self.server.listen(1)  # Waits for connections
+    def start(self):
+        self.server.listen(5)  # Waits for connections
         print(f"[LISTENING] Server is listening on {self.SERVER}")
-        while True:
-            '''try:
-                print("TRUE 1")
-                conn, addr = self.server.accept()
-                thread = threading.Thread(target=self.handle_client, args=(conn, addr, g))
-                thread.start()
-                print(f"[ACTIVE CONNECTIONS] {threading.active_count()}")
-
-                while True:'''
-            try:
-                print("[WAITING FOR CONNECTIONS]")  # Indicate waiting state
-                conn, addr = self.server.accept()
-                print(f"[NEW CONNECTION] {addr} connected.")
-                thread = threading.Thread(target=self.handle_client, args=(conn, addr, g))
-                thread.start()
-                print(f"[ACTIVE CONNECTIONS] {threading.active_count()}")
-            except Exception as e:
-                print(f"[ERROR ACCEPTING CONNECTION] {e}")
-
-            '''except Exception as e:
-                print(f"[ERROR ACCEPTING CONNECTION] {e}")'''
+        while True:  # Indicate waiting state
+            conn, addr = self.server.accept()
+            thread = threading.Thread(target=self.handle_client, args=(conn, addr))
+            thread.start()
+            print(f"[ACTIVE CONNECTIONS] {threading.active_count()}")
+            
+s = Server()
+s.start()
