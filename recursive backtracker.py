@@ -1,4 +1,4 @@
-### In this file my code generates a random map each time the code is ran using the recursive backtracking algorithm.
+# In this file my code generates a random map each time the code is ran using the recursive backtracking algorithm.
 
 # Importing modules from the main
 from main import *
@@ -144,8 +144,6 @@ while check == True:
 
     if len(stack) == 0:
         if current_cell.x == -2 and current_cell.y == -2:
-            print("FINISHED")
-            time.sleep(1)
             check = False
         else:
             current_cell.x = -2
@@ -157,5 +155,3 @@ while check == True:
 
     # Clockspeed
     clock.tick(80)
-
-print("MAIN!!!!!!!!!!!!!!!!")
