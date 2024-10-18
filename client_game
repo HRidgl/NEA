@@ -4,7 +4,6 @@ from game import *
 
 # Calling my classes and creating instances of them
 c = Client()
-print(c)
 g = Game()
 
 # Main loop for the game
@@ -37,6 +36,8 @@ while True:
 
     # Updating the screen
     g.update_screen()
+
+    #c.receive_data()
 
     # Clockspeed
     clock.tick(80)
