@@ -1,18 +1,23 @@
+# Importing modules from the main
 from main import *
 from client import *
 from game import *
+
+# Using a variable for the main loop
+play = True
 
 # Calling my classes and creating instances of them
 c = Client()
 g = Game()
 
 # Main loop for the game
-while True:
+while play == True:
 
     # Checking if the quit button has been pressed
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             c.client.close()
+
             pygame.quit()
             sys.exit()
 
@@ -34,6 +39,7 @@ while True:
     # Sending player coordinates to the server
     c.send_object(c.player1)
 
+    # Receiving objects from the server
     c.receive_message()
 
     # Updating the screen
