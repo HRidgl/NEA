@@ -1,8 +1,6 @@
 # Importing all modules from the main
 from main import *
 from player import *
-import threading
-import sys
 
 # Class used to handle client requests and connects the client to the server
 class Client:
@@ -10,7 +8,7 @@ class Client:
     def __init__(self):
         self.HEADER = 64  #First message to the server is 64 bytes
         self.PORT = 5050  #port location
-        self.SERVER = '172.20.52.187' #server ip
+        self.SERVER = '192.168.1.171' #server ip
         self.ADDR = (self.SERVER, self.PORT)  #makes a tuple
         self.FORMAT = 'utf-8' #format to encode and decode data
         self.DISCONNECT_MESSAGE = "! DISCONNECTED"
@@ -25,8 +23,10 @@ class Client:
         self.player1 = Player(100,100,50,50)
         self.players.append(self.player1)
 
-    def send_object(self, obj):
 
+    # Sending the object to the server computer
+    def send_object(self, obj):
+        # Serialize the object
         serialized_data = pickle.dumps(obj)
 
         # Get the length of the serialized data
@@ -38,9 +38,21 @@ class Client:
         # Send the header and the serialized object
         self.client.sendall(header + serialized_data)
 
-    def receive_data(self):
-        msg_length = self.SERVER.recv(self.HEADER).decode(self.FORMAT)  # Wait until something is sent over the socket
-        if msg_length:
-            msg_length = int(msg_length)  # Shows length of the message that is about to be recieved
-            msg_length = int(msg_length)  # Shows length of the message that is about to be received
-            msg = self.SERVER.recv(msg_length).decode(self.FORMAT)
+
+    def receive_message(self):
+        try:
+            header = self.client.recv(self.HEADER).decode(self.FORMAT)
+            if header:
+                data_length = int(header.strip())
+                serialized_data = self.client.recv(data_length)
+                data = pickle.loads(serialized_data)
+                print(data)
+            
+        except Exception as e:
+            print(f"Error receiving data: {e}")
+            return None
+
+
+    def disconnect(self):
+        self.send_object(self.DISCONNECT_MESSAGE)
+        self.client.close()
