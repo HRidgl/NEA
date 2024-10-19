@@ -7,7 +7,7 @@ from player import *
 # Class used to make a computer turn into a server
 class Server:
 
-    clients = []
+    Clients = []
 
     def __init__(self):
         self.HEADER = 64  # First message to the server is 64 bytes
@@ -26,12 +26,8 @@ class Server:
     # Handles individual connections between client and server
     def handle_client(self, conn, addr):
         print(f"New connection {addr} connected.")
-        client = {'client name': 'bob', 'client socket': conn}
 
-        client_name = client['client name']
-        client_socket = client['client socket']
-
-        Server.clients.append(client)
+        self.send_message('THIS CLIENT IS NOW CONNECTED',conn)
 
         connected = True
         while connected == True:
@@ -49,10 +45,17 @@ class Server:
 
                 # Deserialize the data using pickle
                 player = pickle.loads(data)
-                print("Received object:", player)
-                print(f"Player position: ({player.x}, {player.y})")
-                #msg = 'true'
-                #self.broadcast_message(client_name,msg)
+
+                total = 0
+
+                for i in self.Clients:
+                    total +=1
+
+                self.broadcast(total)
+                #self.send_message(player,conn)
+
+                #print("Received object:", player)
+                #print(f"Player position: ({player.x}, {player.y})")
 
                 # Checking if the quit button has been pressed
                 for event in pygame.event.get():
@@ -66,28 +69,29 @@ class Server:
 
         conn.close()
 
-    def broadcast_message(self,sender_name,msg):
-        for client in self.clients:
-            client_name = client['client name']
-            client_socket = client['client socket']
-            message = msg.encode(self.FORMAT)
-            msg_length = len(message)
-            send_length = str(msg_length).encode(self.FORMAT)
-            send_length += b' ' * (self.HEADER - len(send_length))  # Padding up to 64 bytes
-            self.server.send(send_length)
-            self.server.send(message)
-            #print(self.client.recv(2048).decode(self.FORMAT))
-            #if client_name != sender_name:
+
+    def broadcast(self,message):
+        for client in self.Clients:
+            self.send_message(message,client)
+
+
+    def send_message(self,message,conn):
+        data = pickle.dumps(message)
+        data_length = len(data)
+        header = f"{data_length:<{self.HEADER}}".encode(self.FORMAT)
+        conn.sendall(header + data)
+
 
     # Initiates the client server connection set up
     def start(self):
         self.server.listen(5)  # Waits for connections
         print(f"[LISTENING] Server is listening on {self.SERVER}")
-        while True:  # Indicate waiting state
+        while True:
             conn, addr = self.server.accept()
+            self.Clients.append(conn)
             thread = threading.Thread(target=self.handle_client, args=(conn, addr))
             thread.start()
-            print(f"[ACTIVE CONNECTIONS] {threading.active_count()}")
+            print(f"[ACTIVE CONNECTIONS] {threading.active_count()-1}")
             
 s = Server()
 s.start()
