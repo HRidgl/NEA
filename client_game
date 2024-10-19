@@ -34,10 +34,10 @@ while True:
     # Sending player coordinates to the server
     c.send_object(c.player1)
 
+    c.receive_message()
+
     # Updating the screen
     g.update_screen()
-
-    #c.receive_data()
 
     # Clockspeed
     clock.tick(80)
