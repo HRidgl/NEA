@@ -17,7 +17,7 @@ while play == True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             c.client.close()
-
+            print("THIS CLIENT IS NOW DISCONNECTED")
             pygame.quit()
             sys.exit()
 
