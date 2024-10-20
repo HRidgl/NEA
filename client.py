@@ -37,4 +37,4 @@ class Client:
             data_length = int(header)
             serialized_data = self.client.recv(data_length)
             data = pickle.loads(serialized_data)
-            print(data)
+            return data
