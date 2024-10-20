@@ -8,8 +8,29 @@ class Client_Game():
 
     def __init__(self,play):
         self.play = play
+        self.x = c.player1.x
+        self.y = c.player1.y
 
-    
+
+    def set_x(self,new_x):
+        self.x = new_x
+        
+
+    def set_y(self,new_y):
+        self.y = new_y
+
+
+    def output_data(self,data):
+        print(data)
+
+
+    def split_coordinates(self,data):
+        x = data[0]
+        self.set_x(x)
+        y = data[1]
+        self.set_y(y)
+
+
     def run(self):
         while self.play == True:
 
@@ -41,7 +62,12 @@ class Client_Game():
 
             # Receiving objects from the server
             data = c.receive_message()
-            print(data)
+
+            # Splitting the coordinates into x and y
+            self.output_data(data)
+            self.split_coordinates(data)
+            self.output_data(self.x)
+            self.output_data(self.y)
 
             # Updating the screen
             g.update_screen()
@@ -51,7 +77,8 @@ class Client_Game():
 
 
 # Calling my classes and creating instances of them
-cg = Client_Game(True)
 c = Client()
 g = Game()
+
+cg = Client_Game(True)
 cg.run()
