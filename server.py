@@ -33,6 +33,8 @@ class Server:
 
         while connected == True:
 
+            self.total_clients()
+
             header = conn.recv(self.HEADER)
             if not header:
                 print(f"[DISCONNECTED] {addr} disconnected.")
@@ -40,10 +42,10 @@ class Server:
             
             data = self.receive_objects(conn,header)
 
-            self.send_message(data,conn)
-
             print("Received object:", data)
             print(f"Player position: ({data.x}, {data.y})")
+
+            self.broadcast((data.x,data.y))
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -60,8 +62,8 @@ class Server:
 
 
     # Method to send a message to a single client
-    def send_message(self,message,conn):
-        data = pickle.dumps(message)
+    def send_message(self,object,conn):
+        data = pickle.dumps(object)
         data_length = len(data)
         header = f"{data_length:<{self.HEADER}}".encode(self.FORMAT)
         conn.sendall(header + data)
@@ -80,7 +82,7 @@ class Server:
         total = 0
         for client in self.Clients:
             total +=1
-        self.broadcast(total)
+        self.broadcast(f"There are currently {total} clients")
 
 
     # Initiates the client server connection set up
