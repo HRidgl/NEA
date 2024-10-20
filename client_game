@@ -3,47 +3,55 @@ from main import *
 from client import *
 from game import *
 
-# Using a variable for the main loop
-play = True
+# Main loop for the game
+class Client_Game():
+
+    def __init__(self,play):
+        self.play = play
+
+    
+    def run(self):
+        while self.play == True:
+
+            # Checking if the quit button has been pressed
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    c.client.close()
+                    print("THIS CLIENT IS NOW DISCONNECTED")
+                    pygame.quit()
+                    sys.exit()
+
+                # Moving the characters
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RIGHT:
+                        c.player1.x += 10
+                    if event.key == pygame.K_LEFT:
+                        c.player1.x -= 10
+                    if event.key == pygame.K_DOWN:
+                        c.player1.y += 10
+                    if event.key == pygame.K_UP:
+                        c.player1.y -= 10
+
+            # Drawing the screen
+            g.draw()
+            c.player1.draw_player(g.screen)
+
+            # Sending player coordinates to the server
+            c.send_object(c.player1)
+
+            # Receiving objects from the server
+            data = c.receive_message()
+            print(data)
+
+            # Updating the screen
+            g.update_screen()
+
+            # Clockspeed
+            clock.tick(80)
+
 
 # Calling my classes and creating instances of them
+cg = Client_Game(True)
 c = Client()
 g = Game()
-
-# Main loop for the game
-while play == True:
-
-    # Checking if the quit button has been pressed
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            c.client.close()
-            print("THIS CLIENT IS NOW DISCONNECTED")
-            pygame.quit()
-            sys.exit()
-
-        # Moving the characters
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RIGHT:
-                c.player1.x += 10
-            if event.key == pygame.K_LEFT:
-                c.player1.x -= 10
-            if event.key == pygame.K_DOWN:
-                c.player1.y += 10
-            if event.key == pygame.K_UP:
-                c.player1.y -= 10
-
-    # Drawing the screen
-    g.draw()
-    c.player1.draw_player(g.screen)
-
-    # Sending player coordinates to the server
-    c.send_object(c.player1)
-
-    # Receiving objects from the server
-    c.receive_message()
-
-    # Updating the screen
-    g.update_screen()
-
-    # Clockspeed
-    clock.tick(80)
+cg.run()
