@@ -27,8 +27,16 @@ class Client_Game():
     def split_coordinates(self,data):
         x = data[0]
         self.set_x(x)
+
         y = data[1]
         self.set_y(y)
+
+
+    def is_coordinate(self,data):
+        if type(data) == tuple:
+            return True
+        else:
+            return False
 
 
     def run(self):
@@ -63,11 +71,16 @@ class Client_Game():
             # Receiving objects from the server
             data = c.receive_message()
 
-            # Splitting the coordinates into x and y
-            self.output_data(data)
-            self.split_coordinates(data)
-            self.output_data(self.x)
-            self.output_data(self.y)
+            # Checking if the received data is a coordinate
+            coordinate = self.is_coordinate(data)
+
+            # Outputting the contents of the received data
+            if coordinate == True:
+                self.split_coordinates(data)
+                self.output_data(self.x)
+                self.output_data(self.y)
+            else:
+                self.output_data(data)
 
             # Updating the screen
             g.update_screen()
