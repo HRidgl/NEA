@@ -1,7 +1,0 @@
-from main import *
-from server import *
-from game import *
-
-# Calling my classes and creating instances of them
-s = Server()
-s.start()

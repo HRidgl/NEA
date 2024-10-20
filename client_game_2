@@ -1,0 +1,83 @@
+# Importing modules from the main
+from main import *
+from client import *
+from game import *
+
+# Main loop for the game
+class Client_Game():
+
+    def __init__(self,play):
+        self.play = play
+        self.x = c.player1.x
+
+
+    def set_x(self,new_x):
+        self.x = new_x
+        
+
+    def set_y(self,new_y):
+        self.y = new_y
+
+
+    def output_data(self,data):
+        print(data)
+
+
+    def split_coordinates(self,data):
+        x = data[0]
+        self.set_x(x)
+        y = data[1]
+        self.set_y(y)
+
+
+    def run(self):
+        while self.play == True:
+
+            # Checking if the quit button has been pressed
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    c.client.close()
+                    print("THIS CLIENT IS NOW DISCONNECTED")
+                    pygame.quit()
+                    sys.exit()
+
+                # Moving the characters
+                '''if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RIGHT:
+                        c.player1.x += 10
+                    if event.key == pygame.K_LEFT:
+                        c.player1.x -= 10
+                    if event.key == pygame.K_DOWN:
+                        c.player1.y += 10
+                    if event.key == pygame.K_UP:
+                        c.player1.y -= 10'''
+
+            # Drawing the screen
+            g.draw()
+            c.player1.draw_player(g.screen)
+
+            # Sending player coordinates to the server
+            c.send_object(c.player1)
+
+            # Receiving objects from the server
+            data = c.receive_message()
+
+            # Splitting the coordinates into x and y
+            self.split_coordinates(data)
+            #self.output_data(data)
+            #self.output_data(self.x)
+            #self.output_data(self.y)
+
+            # Updating the screen
+            g.update_screen()
+
+            # Clockspeed
+            clock.tick(80)
+
+
+# Calling my classes and creating instances of them
+c = Client()
+g = Game()
+
+cg = Client_Game(True)
+cg.run()
