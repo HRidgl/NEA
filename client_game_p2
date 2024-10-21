@@ -1,35 +1,54 @@
+### This file is the main game loop for player 2
+
 # Importing modules from the main
 from main import *
 from client import *
 from game import *
 
-# Main loop for the game
+# Class for the game
 class Client_Game():
 
     def __init__(self,play):
         self.play = play
         self.x = c.player1.x
+        self.y = c.player1.y
 
 
+    # x setter method
     def set_x(self,new_x):
         self.x = new_x
-        
 
+        
+    # y setter method
     def set_y(self,new_y):
         self.y = new_y
 
 
+    # Method to print data
     def output_data(self,data):
         print(data)
 
 
+    # Method used to split the coordinates tuple into its x and y components
     def split_coordinates(self,data):
         x = data[0]
         self.set_x(x)
+        c.player1.x = x
+
         y = data[1]
         self.set_y(y)
+        c.player1.y = y
 
 
+    # Method used to check if data is the coordinates or not
+    def is_coordinate(self,data):
+        if type(data) == tuple:
+            return True
+        else:
+            return False
+
+
+    # Method used to run the main game loop
     def run(self):
         while self.play == True:
 
@@ -41,32 +60,24 @@ class Client_Game():
                     pygame.quit()
                     sys.exit()
 
-                # Moving the characters
-                '''if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_RIGHT:
-                        c.player1.x += 10
-                    if event.key == pygame.K_LEFT:
-                        c.player1.x -= 10
-                    if event.key == pygame.K_DOWN:
-                        c.player1.y += 10
-                    if event.key == pygame.K_UP:
-                        c.player1.y -= 10'''
-
             # Drawing the screen
             g.draw()
             c.player1.draw_player(g.screen)
 
             # Sending player coordinates to the server
-            c.send_object(c.player1)
+            #c.send_object(c.player1)
 
             # Receiving objects from the server
             data = c.receive_message()
 
-            # Splitting the coordinates into x and y
-            self.split_coordinates(data)
-            #self.output_data(data)
-            #self.output_data(self.x)
-            #self.output_data(self.y)
+            # Checking if the received data is a coordinate
+            coordinate = self.is_coordinate(data)
+
+            # Splitting coordinates or outputting data
+            if coordinate == True:
+                self.split_coordinates(data)
+            else:
+                self.output_data(data)
 
             # Updating the screen
             g.update_screen()
@@ -74,6 +85,7 @@ class Client_Game():
             # Clockspeed
             clock.tick(80)
 
+#--------------------------------- MAIN ---------------------------------#
 
 # Calling my classes and creating instances of them
 c = Client()
