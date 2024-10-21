@@ -31,9 +31,10 @@ class Server:
         print(f"New connection {addr} connected.")
         self.send_message('THIS CLIENT IS NOW CONNECTED',conn)
 
-        while connected == True:
+        self.broadcast(f"NEW CONNECTION {addr} CONNECTED")
+        self.broadcast(f"THERE ARE NOW {threading.active_count()-1} ACTIVE CLIENTS")
 
-            self.total_clients()
+        while connected == True:
 
             header = conn.recv(self.HEADER)
             if not header:
@@ -41,9 +42,6 @@ class Server:
                 break
             
             data = self.receive_objects(conn,header)
-
-            print("Received object:", data)
-            print(f"Player position: ({data.x}, {data.y})")
 
             self.broadcast((data.x,data.y))
 
@@ -82,12 +80,12 @@ class Server:
         total = 0
         for client in self.Clients:
             total +=1
-        self.broadcast(f"There are currently {total} clients")
+        return total
 
 
     # Initiates the client server connection set up
     def start(self):
-        self.server.listen(2)  # Waits for connections
+        self.server.listen(2)
         print(f"[LISTENING] Server is listening on {self.SERVER}")
         while True:
             conn, addr = self.server.accept()
@@ -96,5 +94,7 @@ class Server:
             thread.start()
             print(f"[ACTIVE CONNECTIONS] {threading.active_count()-1}")
             
+
+#--------------------------------- MAIN ---------------------------------#            
 s = Server()
 s.start()
