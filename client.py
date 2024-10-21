@@ -1,3 +1,5 @@
+### This file is used to handle the socket connections for the clients
+
 # Importing all modules from the main
 from main import *
 from player import *
