@@ -1,3 +1,5 @@
+### This file is used to set up the main screen for the game
+
 # Importing all my modules from main
 from main import *
 
@@ -5,8 +7,8 @@ from main import *
 class Game():
     
     def __init__(self):
-        self.WIDTH = 800
-        self.HEIGHT = 600
+        self.WIDTH = 400
+        self.HEIGHT = 400
         self.RESOLUTION = (self.WIDTH, self.HEIGHT)
 
         # Initialising pygame, setting up the screen and setting up the clock
@@ -19,20 +21,3 @@ class Game():
     # Updating the screen
     def update_screen(self):
         pygame.display.flip()
-
-    # Updating the screen
-    def update_screen(self):
-        pygame.display.flip()
-
-
-class S_Game(Game):
-    def __init__(self,s):
-        self.WIDTH = 800
-        self.HEIGHT = 600
-        self.RESOLUTION = (self.WIDTH, self.HEIGHT)
-
-        # Calling the client class and setting it as an attribute in this class
-        self.network = s
-
-        # Initialising pygame, setting up the screen and setting up the clock
-        self.screen = pygame.display.set_mode(self.RESOLUTION)
