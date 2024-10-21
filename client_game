@@ -74,11 +74,9 @@ class Client_Game():
             # Checking if the received data is a coordinate
             coordinate = self.is_coordinate(data)
 
-            # Outputting the contents of the received data
+            # Splitting coordinates or outputting data
             if coordinate == True:
                 self.split_coordinates(data)
-                self.output_data(self.x)
-                self.output_data(self.y)
             else:
                 self.output_data(data)
 
