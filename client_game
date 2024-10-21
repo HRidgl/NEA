@@ -3,7 +3,7 @@ from main import *
 from client import *
 from game import *
 
-# Main loop for the game
+# Main loop for the game for player1
 class Client_Game():
 
     def __init__(self,play):
@@ -12,18 +12,20 @@ class Client_Game():
         self.y = c.player1.y
 
 
+    # x setter method
     def set_x(self,new_x):
         self.x = new_x
-        
 
+        
+    # y setter method
     def set_y(self,new_y):
         self.y = new_y
 
-
+    # Method to print data
     def output_data(self,data):
         print(data)
 
-
+    # Methof to split the coordinate tuple into x and y componenets
     def split_coordinates(self,data):
         x = data[0]
         self.set_x(x)
@@ -31,14 +33,14 @@ class Client_Game():
         y = data[1]
         self.set_y(y)
 
-
+    # Method to check if a coordinate was transmitted
     def is_coordinate(self,data):
         if type(data) == tuple:
             return True
         else:
             return False
 
-
+    # Main game method
     def run(self):
         while self.play == True:
 
