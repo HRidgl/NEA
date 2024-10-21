@@ -90,6 +90,7 @@ class Client_Game():
             # Clockspeed
             clock.tick(80)
 
+#--------------------------------- MAIN ---------------------------------#
 
 # Calling my classes and creating instances of them
 c = Client()
