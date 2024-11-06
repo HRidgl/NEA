@@ -9,6 +9,8 @@ class Server:
 
     # Array for all the clients to enable broadcasting
     Clients = []
+    Client_ips = []
+    Client_coordinates = ["0:50:50","1:100:100"]
 
     def __init__(self):
         self.HEADER = 64  # First message to the server is 64 bytes
@@ -43,7 +45,7 @@ class Server:
             
             data = self.receive_objects(conn,header)
 
-            self.broadcast((data.x,data.y))
+            self.broadcast_to_others((data.x,data.y),data,addr)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -59,6 +61,12 @@ class Server:
             self.send_message(message,client)
 
 
+    def broadcast_to_others(self,message,data,addr):
+        for client in self.Clients:
+            if data.ip != addr:
+                self.send_message(message,client)
+
+
     # Method to send a message to a single client
     def send_message(self,object,conn):
         data = pickle.dumps(object)
@@ -67,12 +75,22 @@ class Server:
         conn.sendall(header + data)
 
 
-    # Method used to receive objects from clients
-    def receive_objects(self,conn,header):
+
+    def receive_objects(self, conn, header):
         data_length = int(header.decode(self.FORMAT).strip())
-        data = conn.recv(data_length)
+        data = b''  # Start with an empty byte string
+
+        # Keep receiving data until the full length is received
+        while len(data) < data_length:
+            packet = conn.recv(data_length - len(data))  # Receive the remaining amount
+            if not packet:
+                raise ConnectionError("Client disconnected before sending complete data.")
+            data += packet  # Append the received data to the complete data
+
+        # Deserialize the data once the full message is received
         data = pickle.loads(data)
         return data
+
     
 
     # Method used to broadcast the current number of active clients
@@ -90,6 +108,7 @@ class Server:
         while True:
             conn, addr = self.server.accept()
             self.Clients.append(conn)
+            self.Client_ips.append(addr)
             thread = threading.Thread(target=self.handle_client, args=(conn, addr))
             thread.start()
             print(f"[ACTIVE CONNECTIONS] {threading.active_count()-1}")
