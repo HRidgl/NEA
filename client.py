@@ -19,8 +19,10 @@ class Client:
         self.client.connect(self.ADDR) #Connecting the client to the server
 
         self.players = [] #Making an array to store the players
-        self.player1 = Player(100,100,50,50) # Creating player object
+        self.player1 = Player("Player 1",100,100,50,50,(255,0,0)) # Creating player object
         self.players.append(self.player1) # Adding the player to the players array
+        self.player2 = Player("Player 2",200,200,50,50,(0,0,255)) # Creating player object
+        self.players.append(self.player2) # Adding the player to the players array
 
 
     # Method for sending the object to the server computer using pickle sterilisation and sockets
