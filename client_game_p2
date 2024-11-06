@@ -10,8 +10,9 @@ class Client_Game():
 
     def __init__(self,play):
         self.play = play
-        self.x = c.player1.x
-        self.y = c.player1.y
+        if hasattr(c, 'player1') and c.player1 is not None:
+            self.x = c.player1.x
+            self.y = c.player1.y
 
 
     # x setter method
@@ -60,30 +61,49 @@ class Client_Game():
                     pygame.quit()
                     sys.exit()
 
-            # Drawing the screen
-            g.draw()
-            c.player1.draw_player(g.screen)
+            # Handling player movement input
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RIGHT:
+                        c.player2.x += 10
+                        print("TRUE")
+                    elif event.key == pygame.K_LEFT:
+                        c.player2.x -= 10
+                    elif event.key == pygame.K_DOWN:
+                        c.player2.y += 10
+                    elif event.key == pygame.K_UP:
+                        c.player2.y -= 10
+
 
             # Sending player coordinates to the server
-            #c.send_object(c.player1)
+            c.send_object(c.player2)
 
-            # Receiving objects from the server
-            data = c.receive_message()
 
-            # Checking if the received data is a coordinate
-            coordinate = self.is_coordinate(data)
+            try:
+                data = c.receive_message()
+                # Checking if the received data is a coordinate
+                coordinate = self.is_coordinate(data)
 
-            # Splitting coordinates or outputting data
-            if coordinate == True:
-                self.split_coordinates(data)
-            else:
-                self.output_data(data)
+                # Splitting coordinates or outputting data
+                if coordinate:
+                    self.split_coordinates(data)
+                else:
+                    self.output_data(data)
+            except Exception as e:
+                print(f"Error receiving message: {e}")
+
+
+            # Drawing game elements: 
+            g.draw()
+
+            c.player1.draw_player(g.screen)  # Draw player1
+            c.player2.draw_player(g.screen)  # Draw player2
 
             # Updating the screen
             g.update_screen()
 
             # Clockspeed
-            clock.tick(80)
+            clock.tick(60)
 
 #--------------------------------- MAIN ---------------------------------#
 
