@@ -10,7 +10,6 @@ class Server:
     # Array for all the clients to enable broadcasting
     Clients = []
     Client_ips = []
-    Client_coordinates = ["0:50:50","1:100:100"]
 
     def __init__(self):
         self.HEADER = 64  # First message to the server is 64 bytes
@@ -75,7 +74,6 @@ class Server:
         conn.sendall(header + data)
 
 
-
     def receive_objects(self, conn, header):
         data_length = int(header.decode(self.FORMAT).strip())
         data = b''  # Start with an empty byte string
@@ -90,7 +88,6 @@ class Server:
         # Deserialize the data once the full message is received
         data = pickle.loads(data)
         return data
-
     
 
     # Method used to broadcast the current number of active clients
