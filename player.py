@@ -6,17 +6,18 @@ from main import *
 # Class for creating player objects
 class Player:
     
-    def __init__(self,x,y,width,height):
+    def __init__(self,name,x,y,width,height,colour):
+        self.name = name
         self.x = x
         self.y = y
         self.width = width
         self.height = height
-        self.colour = (255,255,255)
+        self.colour = colour
 
     # Method for drawing players to the screen
     def draw_player(self,screen):
         player_square = pygame.Rect(self.x, self.y, 50, 50)
-        pygame.draw.rect(screen, (255, 0, 0), player_square)
+        pygame.draw.rect(screen, self.colour, player_square)
 
     # Changing the x coordinate of the characters
     def set_x(self,new_x):
