@@ -11,8 +11,8 @@ class Client_Game():
     def __init__(self,play):
         self.play = play
         if hasattr(c, 'player1') and c.player1 is not None:
-            self.x = c.player1.x
-            self.y = c.player1.y
+            self.x = c.player2.x
+            self.y = c.player2.y
 
 
     # x setter method
