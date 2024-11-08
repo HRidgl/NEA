@@ -46,7 +46,7 @@ class Client_Game:
             self.client.player1.draw(g.screen)
             g.update_screen()
 
-            # Repeating at regualr intervals
+            # ticking the clock
             self.clock.tick(60)
 
 # ------------------------------------------ MAIN ------------------------------------------ #
