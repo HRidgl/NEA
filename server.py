@@ -1,116 +1,60 @@
-### This file is used to create the server computer and handle the socket connections of clients.
+import threading
+import socket
+import pickle
 
-# Importing modules
-from main import *
-from player import *
-
-# Class used to make a computer turn into a server
 class Server:
-
-    # Array for all the clients to enable broadcasting
-    Clients = []
-    Client_ips = []
-
     def __init__(self):
-        self.HEADER = 64  # First message to the server is 64 bytes
-        self.PORT = 5050  # Port location
-        self.SERVER = socket.gethostbyname(socket.gethostname())  # Gets the IPv4
-        self.ADDR = (self.SERVER, self.PORT)  # Makes a tuple
-        self.FORMAT = 'utf-8' # Declares the encoding format
-        self.DISCONNECT_MESSAGE = "! DISCONNECTED"
+        self.HEADER = 64
+        self.PORT = 5050
+        self.SERVER = socket.gethostbyname(socket.gethostname())
+        self.ADDR = (self.SERVER, self.PORT)
+        self.FORMAT = 'utf-8'
+        self.DISCONNECT_MESSAGE = "!DISCONNECTED"
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.server.bind(self.ADDR)
+        self.clients = []
 
-        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create socket family/type
-        self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # Allow reuse of address
-
-        self.server.bind(self.ADDR) # Binding the address and port to form a socket
-    
-
-    # Handles individual connections between client and server
     def handle_client(self, conn, addr):
+        print(f"[NEW CONNECTION] {addr} connected.")
+        self.clients.append(conn)
         connected = True
-
-        print(f"New connection {addr} connected.")
-        self.send_message('THIS CLIENT IS NOW CONNECTED',conn)
-
-        self.broadcast(f"NEW CONNECTION {addr} CONNECTED")
-        self.broadcast(f"THERE ARE NOW {threading.active_count()-1} ACTIVE CLIENTS")
-
-        while connected == True:
-
-            header = conn.recv(self.HEADER)
-            if not header:
-                print(f"[DISCONNECTED] {addr} disconnected.")
+        while connected:
+            try:
+                header = conn.recv(self.HEADER).decode(self.FORMAT).strip()
+                if header:
+                    data_length = int(header)
+                    serialized_data = conn.recv(data_length)
+                    player_data = pickle.loads(serialized_data)
+                    self.broadcast_to_others(player_data, conn)
+            except Exception as e:
+                print(f"Error handling client {addr}: {e}")
+                connected = False
                 break
-            
-            data = self.receive_objects(conn,header)
-
-            self.broadcast_to_others((data.x,data.y),data,addr)
-
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-
         conn.close()
+        self.clients.remove(conn)
+        print(f"[DISCONNECTED] {addr} disconnected.")
 
+    def broadcast_to_others(self, player_data, sender_conn):
+        # Broadcast player data to all other clients except the sender
+        message = pickle.dumps((player_data.x, player_data.y))
+        header = f"{len(message):<{self.HEADER}}".encode(self.FORMAT)
+        for client in self.clients:
+            if client != sender_conn:
+                try:
+                    client.sendall(header + message)
+                except:
+                    self.clients.remove(client)
 
-    # Method to broadcast messages to all clients
-    def broadcast(self,message):
-        for client in self.Clients:
-            self.send_message(message,client)
-
-
-    def broadcast_to_others(self,message,data,addr):
-        for client in self.Clients:
-            if data.ip != addr:
-                self.send_message(message,client)
-
-
-    # Method to send a message to a single client
-    def send_message(self,object,conn):
-        data = pickle.dumps(object)
-        data_length = len(data)
-        header = f"{data_length:<{self.HEADER}}".encode(self.FORMAT)
-        conn.sendall(header + data)
-
-
-    def receive_objects(self, conn, header):
-        data_length = int(header.decode(self.FORMAT).strip())
-        data = b''  # Start with an empty byte string
-
-        # Keep receiving data until the full length is received
-        while len(data) < data_length:
-            packet = conn.recv(data_length - len(data))  # Receive the remaining amount
-            if not packet:
-                raise ConnectionError("Client disconnected before sending complete data.")
-            data += packet  # Append the received data to the complete data
-
-        # Deserialize the data once the full message is received
-        data = pickle.loads(data)
-        return data
-    
-
-    # Method used to broadcast the current number of active clients
-    def total_clients(self):
-        total = 0
-        for client in self.Clients:
-            total +=1
-        return total
-
-
-    # Initiates the client server connection set up
     def start(self):
-        self.server.listen(2)
+        self.server.listen()
         print(f"[LISTENING] Server is listening on {self.SERVER}")
         while True:
             conn, addr = self.server.accept()
-            self.Clients.append(conn)
-            self.Client_ips.append(addr)
             thread = threading.Thread(target=self.handle_client, args=(conn, addr))
             thread.start()
-            print(f"[ACTIVE CONNECTIONS] {threading.active_count()-1}")
-            
+            print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 1}")
 
-#--------------------------------- MAIN ---------------------------------#            
+# Start the server
 s = Server()
 s.start()
