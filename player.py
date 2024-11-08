@@ -15,7 +15,7 @@ class Player:
         self.colour = colour
 
     # Method for drawing players to the screen
-    def draw_player(self,screen):
+    def draw(self,screen):
         player_square = pygame.Rect(self.x, self.y, 50, 50)
         pygame.draw.rect(screen, self.colour, player_square)
 
