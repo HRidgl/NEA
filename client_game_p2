@@ -1,6 +1,8 @@
 import pygame
 import sys
 import time
+from game import *
+from client import *
 
 class Client_Game:
     def __init__(self, client):
@@ -34,12 +36,14 @@ class Client_Game:
             # Assuming you have a Game class instance `g` that manages the display
             g.draw()  # Draws the background
             self.client.player2.draw(g.screen)
+            self.client.player1.draw(g.screen)
             g.update_screen()
 
             # Maintain a steady frame rate
             self.clock.tick(60)
 
 # Run the game loop
+c = Client()
 g = Game()
 client_game = Client_Game(c)
 client_game.run()
