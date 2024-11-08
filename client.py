@@ -1,44 +1,48 @@
-### This file is used to handle the socket connections for the clients
+import threading
+import time
+import socket
+import pickle
+from player import Player  # Import Player class (assumed to be defined in another file)
+import pygame
 
-# Importing all modules from the main
-from main import *
-from player import *
-
-# Class used to handle client requests and connects the client to the server
 class Client:
-    
     def __init__(self):
-        self.HEADER = 64  #First message to the server is 64 bytes
-        self.PORT = 5050  #port location
-        self.SERVER = '192.168.1.171' #server ip
-        self.ADDR = (self.SERVER, self.PORT)  #makes a tuple
-        self.FORMAT = 'utf-8' #format to encode and decode data
-        self.DISCONNECT_MESSAGE = "! DISCONNECTED"
+        self.HEADER = 64
+        self.PORT = 5050
+        self.SERVER = '192.168.1.171'  # Replace with actual server IP
+        self.ADDR = (self.SERVER, self.PORT)
+        self.FORMAT = 'utf-8'
+        self.DISCONNECT_MESSAGE = "!DISCONNECTED"
 
-        self.client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)  # Create socket family/type    
-        self.client.connect(self.ADDR) #Connecting the client to the server
+        self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.client.connect(self.ADDR)
+        self.player2 = Player("Player 2", 200, 200, 50, 50, (0, 0, 255))
 
-        self.players = [] #Making an array to store the players
-        self.player1 = Player("Player 1",100,100,50,50,(255,0,0)) # Creating player object
-        self.players.append(self.player1) # Adding the player to the players array
-        self.player2 = Player("Player 2",200,200,50,50,(0,0,255)) # Creating player object
-        self.players.append(self.player2) # Adding the player to the players array
-
-
-    # Method for sending the object to the server computer using pickle sterilisation and sockets
     def send_object(self, obj):
         serialized_data = pickle.dumps(obj)
-        data_length = len(serialized_data)
-        header = f"{data_length:<{self.HEADER}}".encode(self.FORMAT)
+        header = f"{len(serialized_data):<{self.HEADER}}".encode(self.FORMAT)
         self.client.sendall(header + serialized_data)
 
+    def receive_data(self):
+        while True:
+            try:
+                header = self.client.recv(self.HEADER).decode(self.FORMAT).strip()
+                if header:
+                    data_length = int(header)
+                    serialized_data = self.client.recv(data_length)
+                    data = pickle.loads(serialized_data)
+                    self.process_received_data(data)
+            except Exception as e:
+                print(f"Error receiving data: {e}")
+                break
 
-    # Method for receiving objects from the server
-    def receive_message(self):
-        header = self.client.recv(self.HEADER).decode(self.FORMAT)
-        if header != '':
-            header = header.strip()
-            data_length = int(header)
-            serialized_data = self.client.recv(data_length)
-            data = pickle.loads(serialized_data)
-            return data
+    def process_received_data(self, data):
+        # Assuming `data` is the position tuple (x, y) for player1.
+        if isinstance(data, tuple) and len(data) == 2:
+            # Smooth update using interpolation
+            self.player2.x += (data[0] - self.player2.x) * 0.1
+            self.player2.y += (data[1] - self.player2.y) * 0.1
+
+# Start the receive thread
+c = Client()
+threading.Thread(target=c.receive_data, daemon=True).start()
