@@ -1,0 +1,64 @@
+### This file is the main game for player 1
+
+# Importing all the modules from main
+from main import *
+
+# Importing classes from game and client files
+from game import *
+from client import *
+
+# This class contains the main game loop for player 1
+class Client_Game:
+
+    # Instantiation
+    def __init__(self, client):
+        self.client = client
+        pygame.init()
+        self.clock = pygame.time.Clock()
+
+
+    # The main game loop
+    def run(self):
+        last_sent_time = time.time()
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RIGHT:
+                        self.client.player1.x += 10
+                    elif event.key == pygame.K_LEFT:
+                        self.client.player1.x -= 10
+                    elif event.key == pygame.K_DOWN:
+                        self.client.player1.y += 10
+                    elif event.key == pygame.K_UP:
+                        self.client.player1.y -= 10
+
+            # Send player position to server at intervals
+            if time.time() - last_sent_time > 0.1:
+                self.client.send_object(self.client.player1)
+                last_sent_time = time.time()
+
+            # Draw and update screen
+            g.draw() 
+            self.client.player2.draw(g.screen)
+            self.client.player1.draw(g.screen)
+            g.update_screen()
+
+            # Ticking the clock
+            self.clock.tick(60)
+
+# -------------------------------------- MAIN  -------------------------------------- #
+
+# Player number to be passed to the client class
+player = 1 
+
+# Start the receive thread
+c = Client(player)
+threading.Thread(target=c.receive_data, daemon=True).start()
+
+# Run the game loop
+g = Game()
+client_game = Client_Game(c)
+client_game.run()
