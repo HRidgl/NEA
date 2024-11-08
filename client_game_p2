@@ -1,15 +1,23 @@
-import pygame
-import sys
-import time
+### This file is the main game for player 2
+
+# Importing all the modules from main
+from main import *
+
+# Importing classes from the game and client files
 from game import *
 from client import *
 
+# This class contains the main game loop for player 2
 class Client_Game:
+
+    # Instantiation
     def __init__(self, client):
         self.client = client
         pygame.init()
         self.clock = pygame.time.Clock()
 
+
+    # The main game loop
     def run(self):
         last_sent_time = time.time()
         while True:
@@ -33,17 +41,24 @@ class Client_Game:
                 last_sent_time = time.time()
 
             # Draw and update screen
-            # Assuming you have a Game class instance `g` that manages the display
-            g.draw()  # Draws the background
+            g.draw()
             self.client.player2.draw(g.screen)
             self.client.player1.draw(g.screen)
             g.update_screen()
 
-            # Maintain a steady frame rate
+            # Repeating at regualr intervals
             self.clock.tick(60)
 
+# ------------------------------------------ MAIN ------------------------------------------ #
+
+# Player number to be passed to the client class
+player = 2
+
+# Start the receive thread
+c = Client(player)
+threading.Thread(target=c.receive_data, daemon=True).start()
+
 # Run the game loop
-c = Client()
 g = Game()
 client_game = Client_Game(c)
 client_game.run()
